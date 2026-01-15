@@ -21,8 +21,12 @@ API docs: http://localhost:8000/docs
 
 ## Aviationstack setup
 
-Set `AVIATIONSTACK_KEY` in `.env`. The API auto-refreshes every
+Create an Aviationstack (flight tracking) API key at https://aviationstack.com,
+then set it in `.env` as `AVIATIONSTACK_KEY`. The API auto-refreshes every
 `AVIATIONSTACK_INTERVAL_SECONDS` (default 3600).
+Optional settings:
+- `AVIATIONSTACK_AIRPORT=ORD` to pin the default airport for background imports.
+- `AVIATIONSTACK_LIMIT=50` to control request size.
 
 Manual import (stores external payloads into SQLite):
 ```bash
