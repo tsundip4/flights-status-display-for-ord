@@ -43,19 +43,13 @@ async def lifespan(_: FastAPI):
 
 app = FastAPI(title="Airport Ops API", lifespan=lifespan)
 
-cors_origins_env = os.getenv("CORS_ALLOW_ORIGINS", "")
-cors_origins = [origin.strip() for origin in cors_origins_env.split(",") if origin.strip()]
-cors_options = {
-    "allow_credentials": True,
-    "allow_methods": ["*"],
-    "allow_headers": ["*"],
-}
-if cors_origins:
-    cors_options["allow_origins"] = cors_origins
-else:
-    cors_options["allow_origin_regex"] = r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$"
-
-app.add_middleware(CORSMiddleware, **cors_options)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.middleware("http")

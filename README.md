@@ -101,6 +101,14 @@ npm run dev
 
 Then open http://localhost:5173
 
+## ArcGIS map (optional)
+
+Add an ArcGIS API key to `frontend/.env` if you want basemap tiles:
+
+```
+VITE_ARCGIS_API_KEY=your_key_here
+```
+
 ## Curl examples
 
 ```bash

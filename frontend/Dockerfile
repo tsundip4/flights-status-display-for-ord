@@ -9,4 +9,4 @@ COPY . .
 
 EXPOSE 5173
 
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "5173"]
+CMD ["sh", "-c", "if [ ! -d node_modules ] || [ ! -d node_modules/@arcgis/core ]; then npm install; fi; npm run dev -- --host 0.0.0.0 --port 5173"]

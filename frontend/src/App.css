@@ -131,10 +131,6 @@ h1 {
   border-color: #f2d7c5;
 }
 
-.action-card {
-  grid-column: 2;
-}
-
 .chart-card {
   background: var(--panel);
   border: 1px solid var(--line);
@@ -263,6 +259,34 @@ h1 {
   font-size: 0.75rem;
 }
 
+.controls {
+  display: grid;
+  grid-template-columns: minmax(320px, 1.2fr) minmax(260px, 0.8fr);
+  gap: 24px;
+  align-items: stretch;
+}
+
+.map-section {
+  display: grid;
+  justify-items: center;
+}
+
+.map-panel {
+  padding: 16px 18px 12px;
+  width: min(980px, 100%);
+}
+
+.map-view {
+  height: 380px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+
+.action-card {
+  min-height: 200px;
+}
+
 .flight-list {
   display: grid;
   gap: 12px;
@@ -318,7 +342,7 @@ h1 {
     flex-direction: column;
   }
 
-  .action-card {
-    grid-column: auto;
+  .controls {
+    grid-template-columns: 1fr;
   }
 }
