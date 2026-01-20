@@ -94,23 +94,58 @@ def import_aviationstack_flights(
 
     limit = limit_override or int(os.getenv("AVIATIONSTACK_LIMIT", "50"))
     airport = os.getenv("AVIATIONSTACK_AIRPORT")
-    params = {"access_key": api_key, "limit": limit}
+    params_base = {"access_key": api_key, "limit": limit}
+    data = []
+    fetched = 0
+
     if airport:
-        params["dep_iata"] = airport.upper()
-
-    response = httpx.get(
-        "https://api.aviationstack.com/v1/flights", params=params, timeout=15.0
-    )
-    response.raise_for_status()
-    payload = response.json()
-    if payload.get("error"):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=payload["error"],
+        airport = airport.upper()
+        departures_res = httpx.get(
+            "https://api.aviationstack.com/v1/flights",
+            params={**params_base, "dep_iata": airport},
+            timeout=15.0,
         )
+        departures_res.raise_for_status()
+        departures_payload = departures_res.json()
+        if departures_payload.get("error"):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=departures_payload["error"],
+            )
+        departures_data = departures_payload.get("data", []) or []
+        data.extend(departures_data)
+        fetched += len(departures_data)
 
-    data = payload.get("data", []) or []
-    fetched = len(data)
+        arrivals_res = httpx.get(
+            "https://api.aviationstack.com/v1/flights",
+            params={**params_base, "arr_iata": airport},
+            timeout=15.0,
+        )
+        arrivals_res.raise_for_status()
+        arrivals_payload = arrivals_res.json()
+        if arrivals_payload.get("error"):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=arrivals_payload["error"],
+            )
+        arrivals_data = arrivals_payload.get("data", []) or []
+        data.extend(arrivals_data)
+        fetched += len(arrivals_data)
+    else:
+        response = httpx.get(
+            "https://api.aviationstack.com/v1/flights",
+            params=params_base,
+            timeout=15.0,
+        )
+        response.raise_for_status()
+        payload = response.json()
+        if payload.get("error"):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=payload["error"],
+            )
+        data = payload.get("data", []) or []
+        fetched = len(data)
     created = 0
     external_upserts = 0
 
