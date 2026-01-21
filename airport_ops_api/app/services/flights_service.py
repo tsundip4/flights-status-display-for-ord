@@ -32,6 +32,42 @@ def _normalize_iata_value(code: str | None) -> str:
     return value if len(value) == 3 else "UNK"
 
 
+def _map_aviationstack_payload(item: dict, direction: str) -> dict:
+    flight_info = item.get("flight") or {}
+    airline_info = item.get("airline") or {}
+    departure_info = item.get("departure") or {}
+    arrival_info = item.get("arrival") or {}
+    scheduled = (
+        departure_info.get("scheduled")
+        if direction == "departure"
+        else arrival_info.get("scheduled")
+    )
+
+    return {
+        "flight_number": flight_info.get("iata")
+        or flight_info.get("icao")
+        or "UNKNOWN",
+        "airline": airline_info.get("name")
+        or airline_info.get("iata")
+        or airline_info.get("icao")
+        or "Unknown",
+        "status": item.get("flight_status") or "unknown",
+        "origin": departure_info.get("iata") or "UNK",
+        "destination": arrival_info.get("iata") or "UNK",
+        "scheduled": scheduled,
+        "terminal": (
+            departure_info.get("terminal")
+            if direction == "departure"
+            else arrival_info.get("terminal")
+        ),
+        "gate": (
+            departure_info.get("gate")
+            if direction == "departure"
+            else arrival_info.get("gate")
+        ),
+    }
+
+
 def store_aviationstack_item(
     db: Session, item: dict, _airport: str | None
 ) -> tuple[bool, str]:
@@ -197,47 +233,50 @@ def fetch_aviationstack_airport(airport: str, limit: int) -> dict:
             detail=arrivals_payload["error"],
         )
 
-    def map_item(item: dict, direction: str) -> dict:
-        flight_info = item.get("flight") or {}
-        airline_info = item.get("airline") or {}
-        departure_info = item.get("departure") or {}
-        arrival_info = item.get("arrival") or {}
-        scheduled = (
-            departure_info.get("scheduled")
-            if direction == "departure"
-            else arrival_info.get("scheduled")
-        )
-
-        return {
-            "flight_number": flight_info.get("iata")
-            or flight_info.get("icao")
-            or "UNKNOWN",
-            "airline": airline_info.get("name")
-            or airline_info.get("iata")
-            or airline_info.get("icao")
-            or "Unknown",
-            "status": item.get("flight_status") or "unknown",
-            "origin": departure_info.get("iata") or "UNK",
-            "destination": arrival_info.get("iata") or "UNK",
-            "scheduled": scheduled,
-            "terminal": (
-                departure_info.get("terminal")
-                if direction == "departure"
-                else arrival_info.get("terminal")
-            ),
-            "gate": (
-                departure_info.get("gate")
-                if direction == "departure"
-                else arrival_info.get("gate")
-            ),
-        }
-
     departures = [
-        map_item(item, "departure")
+        _map_aviationstack_payload(item, "departure")
         for item in (departures_payload.get("data") or [])
     ]
     arrivals = [
-        map_item(item, "arrival") for item in (arrivals_payload.get("data") or [])
+        _map_aviationstack_payload(item, "arrival")
+        for item in (arrivals_payload.get("data") or [])
+    ]
+
+    return {"airport": airport, "departures": departures, "arrivals": arrivals}
+
+
+def fetch_aviationstack_airport_from_db(
+    db: Session, airport: str, limit: int
+) -> dict:
+    airport = airport.strip().upper()
+    departures_rows = (
+        db.query(ExternalFlightDB)
+        .filter(
+            ExternalFlightDB.source == "aviationstack",
+            ExternalFlightDB.origin == airport,
+        )
+        .order_by(ExternalFlightDB.updated_at.desc())
+        .limit(limit)
+        .all()
+    )
+    arrivals_rows = (
+        db.query(ExternalFlightDB)
+        .filter(
+            ExternalFlightDB.source == "aviationstack",
+            ExternalFlightDB.destination == airport,
+        )
+        .order_by(ExternalFlightDB.updated_at.desc())
+        .limit(limit)
+        .all()
+    )
+
+    departures = [
+        _map_aviationstack_payload(row.payload or {}, "departure")
+        for row in departures_rows
+    ]
+    arrivals = [
+        _map_aviationstack_payload(row.payload or {}, "arrival")
+        for row in arrivals_rows
     ]
 
     return {"airport": airport, "departures": departures, "arrivals": arrivals}

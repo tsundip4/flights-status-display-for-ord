@@ -36,6 +36,15 @@ async def get_aviationstack_airport(
     return flights_service.fetch_aviationstack_airport(airport, limit)
 
 
+@router.get("/{airport}", response_model=AviationstackAirportResponse)
+async def get_airport_from_db(
+    airport: str,
+    limit: int = Query(default=20, ge=1, le=100),
+    db: Session = Depends(get_db),
+) -> dict:
+    return flights_service.fetch_aviationstack_airport_from_db(db, airport, limit)
+
+
 @router.post("/aviationstack/manual", response_model=AviationstackManualResult)
 async def create_aviationstack_manual(
     payload: AviationstackManualCreate,
