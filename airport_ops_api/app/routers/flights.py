@@ -26,12 +26,12 @@ async def import_aviationstack(
         "external_upserts": external_upserts,
     }
 
-
+#this api will get the data directly from aviation stack api. this is idle right now 
 @router.get(
     "/aviationstack/{airport}", response_model=AviationstackAirportResponse
 )
 async def get_aviationstack_airport(
-    airport: str, limit: int = Query(default=2000, ge=1, le=100)
+    airport: str, limit: int = Query(default=2000, ge=1, le=3000)
 ) -> dict:
     return flights_service.fetch_aviationstack_airport(airport, flight_number)
 
@@ -39,7 +39,7 @@ async def get_aviationstack_airport(
 @router.get("/{airport}", response_model=AviationstackAirportResponse)
 async def get_airport_from_db(
     airport: str,
-    limit: int = Query(default=20, ge=1, le=100),
+    limit: int = Query(default=2000, ge=1, le=3000),
     db: Session = Depends(get_db),
 ) -> dict:
     return flights_service.fetch_aviationstack_airport_from_db(db, airport, flight_number)

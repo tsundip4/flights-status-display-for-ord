@@ -8,7 +8,7 @@ export function useFlightsData() {
   const [lastUpdated, setLastUpdated] = useState(null);
   const [error, setError] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [limit, setLimit] = useState(25);
+  const [limit, setLimit] = useState(500);
   const initialLimitRef = useRef(limit);
 
   const fetchData = async (requestedLimit) => {
