@@ -11,7 +11,7 @@ from ..schemas import (
 from ..services import flights_service
 
 router = APIRouter(prefix="/flights", tags=["flights"])
-
+flight_number = 2000
 
 @router.post("/import-aviationstack", response_model=AviationstackImportResult)
 async def import_aviationstack(
@@ -31,9 +31,9 @@ async def import_aviationstack(
     "/aviationstack/{airport}", response_model=AviationstackAirportResponse
 )
 async def get_aviationstack_airport(
-    airport: str, limit: int = Query(default=20, ge=1, le=100)
+    airport: str, limit: int = Query(default=2000, ge=1, le=100)
 ) -> dict:
-    return flights_service.fetch_aviationstack_airport(airport, limit)
+    return flights_service.fetch_aviationstack_airport(airport, flight_number)
 
 
 @router.get("/{airport}", response_model=AviationstackAirportResponse)
@@ -42,7 +42,7 @@ async def get_airport_from_db(
     limit: int = Query(default=20, ge=1, le=100),
     db: Session = Depends(get_db),
 ) -> dict:
-    return flights_service.fetch_aviationstack_airport_from_db(db, airport, limit)
+    return flights_service.fetch_aviationstack_airport_from_db(db, airport, flight_number)
 
 
 @router.post("/aviationstack/manual", response_model=AviationstackManualResult)

@@ -10,7 +10,7 @@ FastAPI backend + React dashboard for Aviationstack-powered flight data (Chicago
 
 ```bash
 cp .env.example .env
-python -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 cd airport_ops_api

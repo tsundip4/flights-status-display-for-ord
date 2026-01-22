@@ -9,7 +9,7 @@ export default function ManualFetchCard({
       <h3>Manual fetch</h3>
       <p>Pull the latest ORD board instantly.</p>
       <div className="action-row">
-        <label>
+        {/* <label>
           Limit
           <input
             type="number"
@@ -22,7 +22,7 @@ export default function ManualFetchCard({
               onLimitChange(Number.isNaN(nextValue) ? 25 : nextValue);
             }}
           />
-        </label>
+        </label> */}
         <button type="button" onClick={() => onFetch()} disabled={isRefreshing}>
           Fetch now
         </button>
