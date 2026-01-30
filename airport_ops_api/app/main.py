@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 load_dotenv()
 
 from .db import Base, SessionLocal, engine  # noqa: E402
-from .routers import flights  # noqa: E402
+from .routers import flights, ai  # noqa: E402
 from .services import flights_service  # noqa: E402
 
 
@@ -68,3 +68,4 @@ async def health() -> dict:
 
 
 app.include_router(flights.router)
+app.include_router(ai.router)

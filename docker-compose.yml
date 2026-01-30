@@ -10,9 +10,9 @@ services:
     volumes:
       - ./airport_ops_api:/app
       - ./data:/data
-    pids_limit: 512
+    pids_limit: -1
     ulimits:
-      nproc: 65535
+      nproc: 8192
   frontend:
     build: ./frontend
     ports:

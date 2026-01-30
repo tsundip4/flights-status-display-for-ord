@@ -5,6 +5,7 @@ import ErrorBanner from "./components/ErrorBanner";
 import LatestFlights from "./components/LatestFlights";
 import MapSection from "./components/MapSection";
 import SummaryCards from "./components/SummaryCards";
+import ChatPanel from "./components/ChatPanel";
 import { useArrivalsDeparturesChart } from "./hooks/useArrivalsDeparturesChart";
 import { useFlightsData } from "./hooks/useFlightsData";
 import { useFlightSummary } from "./hooks/useFlightSummary";
@@ -53,6 +54,7 @@ function ChicagoDashboard() {
         onFetch={fetchData}
       />
       <MapSection mapRef={mapRef} />
+      <ChatPanel />
       <LatestFlights flights={latestFlights} />
     </div>
   );

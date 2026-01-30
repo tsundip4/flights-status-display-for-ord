@@ -10,7 +10,7 @@ FastAPI backend + React dashboard for Aviationstack-powered flight data (Chicago
 
 ```bash
 cp .env.example .env
-python3 -m venv .venv
+python3.11 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 cd airport_ops_api
@@ -70,6 +70,21 @@ export default function DashboardSummary() {
     <pre>{JSON.stringify(summary, null, 2)}</pre>
   );
 }
+```
+
+## LLM chat endpoint (OpenAI)
+
+```
+GEMINI_API_KEY=your_key_here
+GEMINI_MODEL=gemini-2.0-flash
+```
+
+Ask the backend for a natural-language answer grounded in stored flight data:
+
+```bash
+curl -X POST "http://localhost:8000/ai/ask" \
+  -H "Content-Type: application/json" \
+  -d '{"question":"What are the next departures to LAX?","airport":"ORD"}'
 ```
 
 ## Run tests
