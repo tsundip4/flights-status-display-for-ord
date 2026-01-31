@@ -1,8 +1,7 @@
 import os
 import json
 import logging
-
-from google import genai
+from typing import TYPE_CHECKING
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
@@ -29,8 +28,13 @@ def _get_gemini_api_key() -> str:
         )
     return api_key
 
-def _get_gemini_client(api_key: str) -> genai.Client:
+def _get_gemini_client(api_key: str) -> "genai.Client":
+    from google import genai
+
     return genai.Client(api_key=api_key)
+
+if TYPE_CHECKING:
+    from google import genai
 
 @router.post("/ask", response_model=ChatResponse)
 async def ask_ai(payload: ChatRequest, db: Session = Depends(get_db)) -> dict:

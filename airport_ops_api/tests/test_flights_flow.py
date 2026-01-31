@@ -1,8 +1,9 @@
-from app.db import SessionLocal
-from app.models import ExternalFlightDB
+
 
 
 def test_manual_aviationstack_store(client):
+    from app.db import SessionLocal
+    from app.models import ExternalFlightDB
     payload = {
         "payload": {
             "flight_status": "scheduled",
